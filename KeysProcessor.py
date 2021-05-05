@@ -38,26 +38,34 @@ keyassoc = {
     Keys.KEY_X:     'a',
     Keys.KEY_Y:     's',
     Keys.KEY_Z:     'd'
-    
 }
 
-def process(key):
+def keydown(key):
     if not key in keyassoc:
         return
     keyevent = keyassoc[key]
+    os.system("xdotool keydown " + keyevent)
 
-    os.system("xdotool key " + keyevent)
+def keyup(key):
+    if not key in keyassoc:
+        return
+    keyevent = keyassoc[key]
+    os.system("xdotool keyup " + keyevent)
 
 
 def main():
-    with serial.Serial('/dev/ttyUSB0', 9600, timeout=1) as ser:
+    with serial.Serial('/dev/ttyUSB0', 9600) as ser:
         while True:
             x = ser.read()
-            if len(x) != 1:
+            # key code stored in first 4 bits
+            key = x[0] & 0x0F
+            # key press status stored in 7nth bit (1 - pressed, 0 - released)
+            keypressed = x[0] & 0x80
+            if not Keys.has_value(key):
                 continue
-            if not Keys.has_value(x[0]):
-                continue
-
-            process(Keys(x[0]))
+            if keypressed:
+                keydown(Keys(key))
+            else:
+                keyup(Keys(key))
 
 main()
