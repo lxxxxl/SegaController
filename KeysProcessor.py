@@ -1,5 +1,7 @@
 import os
 import serial
+import json
+import time
 from enum import Enum
 # enum of keys on Sega controller
 class Keys(Enum):
@@ -52,9 +54,8 @@ def keyup(key):
     keyevent = keyassoc[key]
     os.system("xdotool keyup " + keyevent)
 
-
-def main():
-    with serial.Serial('/dev/ttyUSB0', 9600) as ser:
+def loop(device, speed):
+    with serial.Serial(device, speed) as ser:
         while True:
             x = ser.read()
             # key code stored in first 4 bits
@@ -67,5 +68,32 @@ def main():
                 keydown(Keys(key))
             else:
                 keyup(Keys(key))
+
+def main():
+    # read config file
+    path = os.path.dirname(os.path.realpath(__file__))
+    if not os.path.isfile(path + '/config.json'):
+        print('config.json not found')
+        exit(1)
+    with open(path + '/config.json', 'r') as read_file:
+                config = json.load(read_file)
+
+    # try to communicate with serial
+    while True:
+        # wait while device appears
+        if not os.path.exists(config['device']):
+            time.sleep(config['sleep'])
+        else:
+            try:
+                # connect to device
+                print('connecting to %s' % config['device'])
+                loop(config['device'], config['speed'])
+            except:
+                # device disconnect occured
+                print('device disconnected')
+                pass
+
+
+    
 
 main()
