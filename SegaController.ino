@@ -1,13 +1,13 @@
 // Retieves keys pressed on Sega Mega Drive controller and sends keycodes to PC via UART
 // based on source code from https://eax.me/arduino-sega-controller/
 
-#define PIN_UP_OR_Z 6
-#define PIN_DOWN_OR_Y 7
+#define PIN_UP_OR_Z 12
+#define PIN_DOWN_OR_Y 10
 #define PIN_LEFT_OR_X 8
-#define PIN_RIGHT_OR_MODE 9
-#define PIN_B_OR_A 10
-#define PIN_SEL 11
-#define PIN_C_OR_START 12
+#define PIN_RIGHT_OR_MODE 7
+#define PIN_B_OR_A 11
+#define PIN_SEL 9
+#define PIN_C_OR_START 6
 
 enum Key {
   KEY_UP,
